@@ -17,7 +17,7 @@ and focused feature contributions are welcome.
 LogTUI requires Python 3.12 or newer.
 
 ```bash
-git clone https://github.com/OWNER/logtui.git
+git clone https://github.com/JVRLC/logtui.git
 cd logtui
 python -m venv .venv
 source .venv/bin/activate
@@ -42,4 +42,3 @@ mypy src
 - Use clear commit messages written in the imperative mood.
 
 By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
-

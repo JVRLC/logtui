@@ -42,9 +42,9 @@ dev = [
 logtui = "logtui.cli:app"
 
 [project.urls]
-Documentation = "https://github.com/OWNER/logtui#readme"
-Issues = "https://github.com/OWNER/logtui/issues"
-Repository = "https://github.com/OWNER/logtui"
+Documentation = "https://github.com/JVRLC/logtui#readme"
+Issues = "https://github.com/JVRLC/logtui/issues"
+Repository = "https://github.com/JVRLC/logtui"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/logtui"]
