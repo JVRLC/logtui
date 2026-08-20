@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling>=1.25"]
+build-backend = "hatchling.build"
+
+[project]
+name = "logtui"
+version = "0.1.0"
+description = "A fast terminal UI for exploring and filtering logs."
+readme = "README.md"
+requires-python = ">=3.12"
+license = { file = "LICENSE" }
+authors = [{ name = "LogTUI contributors" }]
+keywords = ["cli", "logs", "terminal", "textual", "tui"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Debuggers",
+  "Topic :: System :: Logging",
+]
+dependencies = [
+  "pydantic>=2.7,<3",
+  "textual>=0.75,<2",
+  "typer>=0.12,<1",
+  "watchfiles>=0.22,<2",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.10",
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.5",
+]
+
+[project.scripts]
+logtui = "logtui.cli:app"
+
+[project.urls]
+Documentation = "https://github.com/OWNER/logtui#readme"
+Issues = "https://github.com/OWNER/logtui/issues"
+Repository = "https://github.com/OWNER/logtui"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/logtui"]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+packages = ["logtui"]
