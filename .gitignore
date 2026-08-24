@@ -24,3 +24,8 @@ venv/
 *.csv
 *.jsonl
 
+# Documentation site
+node_modules/
+website/.vitepress/.temp/
+website/.vitepress/cache/
+website/.vitepress/dist/

@@ -42,7 +42,7 @@ dev = [
 logtui = "logtui.cli:app"
 
 [project.urls]
-Documentation = "https://github.com/JVRLC/logtui#readme"
+Documentation = "https://jvrlc.github.io/logtui/"
 Issues = "https://github.com/JVRLC/logtui/issues"
 Repository = "https://github.com/JVRLC/logtui"
 

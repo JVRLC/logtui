@@ -2,6 +2,10 @@
 
 > A fast terminal UI for exploring and filtering logs.
 
+**[Website](https://jvrlc.github.io/logtui/)** ·
+**[Getting started](#install)** ·
+**[Contributing](CONTRIBUTING.md)**
+
 LogTUI reads local log files, normalizes JSONL and plain-text entries, and follows
 new lines in a navigable terminal table. It is local-only and needs no server.
 
@@ -49,6 +53,8 @@ plain text.
 | `↑` / `↓` | Navigate |
 | `Enter` | Open log details |
 | `Space` | Pause/resume display |
+| `j` / `k` | Navigate using Vim-style keys |
+| `?` | Open keyboard help |
 | `q` | Quit or close details |
 
 ## Roadmap
@@ -64,4 +70,3 @@ optional.
 
 Run `pytest`, `ruff check .`, `ruff format --check .`, and `mypy` before opening a
 change. Focused bug reports and small, tested pull requests are welcome.
-

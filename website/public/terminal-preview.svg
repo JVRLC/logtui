@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="590" viewBox="0 0 1200 590" role="img" aria-label="LogTUI terminal preview">
+  <style>
+    text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .muted { fill: #8693a5; } .bright { fill: #e5e7eb; } .green { fill: #34d399; }
+    .yellow { fill: #fbbf24; } .red { fill: #fb7185; } .cyan { fill: #38bdf8; }
+  </style>
+  <rect width="1200" height="590" rx="14" fill="#080d14"/>
+  <rect width="1200" height="52" rx="14" fill="#202c3a"/><rect y="39" width="1200" height="13" fill="#202c3a"/>
+  <circle cx="25" cy="26" r="6" fill="#fb7185"/><circle cx="47" cy="26" r="6" fill="#fbbf24"/><circle cx="69" cy="26" r="6" fill="#34d399"/>
+  <text x="470" y="33" class="bright" font-size="18" font-weight="700">LogTUI — Live log explorer</text>
+  <text x="1090" y="33" class="muted" font-size="18">10:47:05</text>
+  <rect x="0" y="52" width="235" height="486" fill="#111923"/><line x1="235" y1="52" x2="235" y2="538" stroke="#344150"/>
+  <text x="25" y="90" class="muted" font-size="15" font-weight="700">SOURCES</text>
+  <circle cx="30" cy="126" r="5" fill="#34d399"/><text x="46" y="132" class="bright" font-size="17">demo.log</text><text x="190" y="132" class="muted" font-size="15">41</text>
+  <circle cx="30" cy="160" r="5" fill="#475569"/><text x="46" y="166" class="bright" font-size="17">worker.log</text><text x="190" y="166" class="muted" font-size="15">12</text>
+  <line x1="20" y1="455" x2="215" y2="455" stroke="#344150"/><text x="25" y="484" class="muted" font-size="15">Buffer</text><text x="25" y="510" class="bright" font-size="20" font-weight="700">10,000</text>
+  <text x="260" y="88" class="bright" font-size="19" font-weight="700">Live events</text>
+  <text x="260" y="128" class="muted" font-size="13" font-weight="700">TIME</text><text x="370" y="128" class="muted" font-size="13" font-weight="700">LEVEL</text><text x="480" y="128" class="muted" font-size="13" font-weight="700">SERVICE</text><text x="630" y="128" class="muted" font-size="13" font-weight="700">MESSAGE</text>
+  <g font-size="16">
+    <text x="260" y="172" class="muted">09:04:03</text><text x="370" y="172" class="green" font-weight="700">INFO</text><text x="480" y="172" class="bright">billing</text><text x="630" y="172" class="bright">Payment confirmed</text>
+    <rect x="245" y="190" width="935" height="46" fill="#18324a"/>
+    <text x="260" y="219" class="muted">09:06:35</text><text x="370" y="219" class="red" font-weight="700">ERROR</text><text x="480" y="219" class="bright">database</text><text x="630" y="219" class="bright">Database query timeout</text>
+    <text x="260" y="266" class="muted">09:08:47</text><text x="370" y="266" class="yellow" font-weight="700">WARN</text><text x="480" y="266" class="bright">worker</text><text x="630" y="266" class="bright">High memory usage</text>
+    <text x="260" y="313" class="muted">09:09:22</text><text x="370" y="313" class="red" font-weight="700">ERROR</text><text x="480" y="313" class="bright">payments</text><text x="630" y="313" class="bright">Payment provider unavailable</text>
+    <text x="260" y="360" class="muted">09:13:10</text><text x="370" y="360" class="green" font-weight="700">INFO</text><text x="480" y="360" class="bright">database</text><text x="630" y="360" class="bright">Read replica promoted</text>
+    <text x="260" y="407" class="muted">09:14:35</text><text x="370" y="407" class="red" font-weight="700">ERROR</text><text x="480" y="407" class="bright">legacy</text><text x="630" y="407" class="bright">Unable to rotate archived log file</text>
+  </g>
+  <rect x="235" y="492" width="965" height="46" fill="#152435"/><circle cx="262" cy="515" r="5" fill="#34d399"/><text x="277" y="521" class="green" font-size="15" font-weight="700">LIVE</text><text x="330" y="521" class="muted" font-size="15">Following files</text><text x="1095" y="521" class="muted" font-size="15">53 events</text>
+  <rect y="538" width="1200" height="52" rx="14" fill="#202c3a"/><rect y="538" width="1200" height="12" fill="#202c3a"/>
+  <text x="25" y="570" class="yellow" font-size="16" font-weight="700">q</text><text x="45" y="570" class="bright" font-size="16">Quit</text><text x="125" y="570" class="yellow" font-size="16" font-weight="700">space</text><text x="185" y="570" class="bright" font-size="16">Pause/resume</text><text x="345" y="570" class="yellow" font-size="16" font-weight="700">enter</text><text x="405" y="570" class="bright" font-size="16">Details</text><text x="510" y="570" class="yellow" font-size="16" font-weight="700">?</text><text x="530" y="570" class="bright" font-size="16">Help</text>
+</svg>

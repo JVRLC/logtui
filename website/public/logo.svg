@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="LogTUI logo">
+  <defs>
+    <linearGradient id="g" x1="18" y1="18" x2="162" y2="162" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#14b8a6"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <rect x="14" y="14" width="152" height="152" rx="40" fill="#111827" stroke="url(#g)" stroke-width="8"/>
+  <path d="m47 61 30 29-30 29" fill="none" stroke="url(#g)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M91 121h43" fill="none" stroke="#e5e7eb" stroke-width="14" stroke-linecap="round"/>
+</svg>

@@ -14,4 +14,9 @@ project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Normalized Pydantic log model and bounded in-memory ring buffer.
 - Textual table with pause/resume and structured detail view.
 - Unit tests, static analysis, formatting, and continuous integration.
+- Responsive project website and automated GitHub Pages deployment.
 
+### Changed
+
+- Redesigned the TUI with a source sidebar, live counters, colored levels,
+  keyboard help, and a structured detail dialog.
