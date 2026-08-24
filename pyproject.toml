@@ -25,7 +25,7 @@ classifiers = [
 ]
 dependencies = [
   "pydantic>=2.7,<3",
-  "textual>=0.75,<2",
+  "textual>=0.75,<9",
   "typer>=0.12,<1",
 ]
 
