@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - "website/**"
+      - "package.json"
+      - "package-lock.json"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 

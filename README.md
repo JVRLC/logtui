@@ -40,6 +40,7 @@ pytest
 ```bash
 logtui app.log
 logtui api.log worker.log --buffer-size 20000
+docker logs -f my-api | logtui -
 ```
 
 JSON objects are mapped to timestamp, level, service, and message. Extra fields
@@ -53,14 +54,15 @@ plain text.
 | `↑` / `↓` | Navigate |
 | `Enter` | Open log details |
 | `Space` | Pause/resume display |
+| `/` | Search across visible log fields |
 | `j` / `k` | Navigate using Vim-style keys |
 | `?` | Open keyboard help |
 | `q` | Quit or close details |
 
 ## Roadmap
 
-The next milestones add stdin (`docker logs -f ... | logtui -`), text search,
-an independently tested query language, headless JSONL output, and exports.
+The next milestones add an independently tested query language, headless JSONL
+output, and exports.
 
 The package is separated into sources, parsing, models, buffer, and TUI layers so
 future Docker, Kubernetes, journald, and custom parser integrations can remain

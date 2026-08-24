@@ -8,6 +8,7 @@ LogTUI is designed to remain usable without a mouse.
 | <kbd>j</kbd> / <kbd>k</kbd> | Move using Vim-style keys |
 | <kbd>Enter</kbd> | Inspect the selected entry |
 | <kbd>Space</kbd> | Pause or resume the visible stream |
+| <kbd>/</kbd> | Search across all log fields |
 | <kbd>?</kbd> | Open the integrated help |
 | <kbd>q</kbd> | Close a dialog or quit LogTUI |
 

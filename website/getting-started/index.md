@@ -44,6 +44,16 @@ number of entries retained in memory:
 logtui app.log --buffer-size 20000
 ```
 
+## Read standard input
+
+Use `-` to inspect any command that streams logs:
+
+```bash
+docker logs -f my-api | logtui -
+kubectl logs -f deployment/api | logtui -
+journalctl -f | logtui -
+```
+
 ## Try the included demo
 
 From a development checkout:

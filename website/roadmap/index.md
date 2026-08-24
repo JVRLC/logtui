@@ -5,8 +5,6 @@ leaving room for the features below.
 
 ## Next
 
-- Standard input support for Docker, Kubernetes and journald pipelines
-- Fast text search
 - Independently tested query language
 - Headless JSONL output
 - JSON, JSONL and CSV exports
