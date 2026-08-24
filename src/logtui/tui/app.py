@@ -1,6 +1,8 @@
 import asyncio
 import json
 from collections import Counter
+from collections.abc import Sequence
+from functools import partial
 from pathlib import Path
 from typing import Any
 
@@ -10,12 +12,12 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
-from textual.widgets import DataTable, Footer, Header, Label, Static
+from textual.widgets import DataTable, Footer, Header, Input, Label, Static
 
 from logtui.buffer import RingBuffer
 from logtui.models import LogEntry
 from logtui.parsing import AutoDetectParser
-from logtui.sources import FileSource
+from logtui.sources.base import LogSource
 
 LEVEL_STYLES = {
     "DEBUG": "dim cyan",
@@ -95,6 +97,7 @@ class HelpScreen(ModalScreen[None]):
             "[b]↑ / ↓  j / k[/b]    Navigate logs\n"
             "[b]enter[/b]            Inspect selected log\n"
             "[b]space[/b]            Pause or resume the stream\n"
+            "[b]/[/b]                Search all log fields\n"
             "[b]?[/b]                Toggle this help\n"
             "[b]q[/b]                Quit LogTUI"
         )
@@ -133,6 +136,8 @@ class LogTuiApp(App[None]):
         text-style: bold; background: $surface;
     }
     #logs { height: 1fr; border: none; }
+    #search-input { display: none; height: 3; border: tall $accent; }
+    #search-input.visible { display: block; }
     #status-bar {
         height: 1; padding: 0 1;
         background: $panel; color: $text-muted;
@@ -145,18 +150,22 @@ class LogTuiApp(App[None]):
         Binding("space", "toggle_pause", "Pause/resume"),
         Binding("enter", "details", "Details"),
         Binding("?", "help", "Help"),
+        Binding("/", "search", "Search"),
+        Binding("escape", "clear_search", "Clear search", show=False),
         Binding("j", "cursor_down", "Down", show=False),
         Binding("k", "cursor_up", "Up", show=False),
     ]
 
-    def __init__(self, paths: list[Path], buffer_size: int = 10_000) -> None:
+    def __init__(self, sources: Sequence[LogSource], buffer_size: int = 10_000) -> None:
         super().__init__()
-        self.paths = paths
+        self.sources = list(sources)
         self.entries: RingBuffer[LogEntry] = RingBuffer(buffer_size)
         self.parser = AutoDetectParser()
         self.paused = False
-        self._pending: list[LogEntry] = []
+        self._pending_count = 0
         self._source_counts: Counter[str] = Counter()
+        self._source_errors: dict[str, str] = {}
+        self.search_query = ""
         self._next_id = 0
         self._tasks: list[asyncio.Task[Any]] = []
 
@@ -166,10 +175,10 @@ class LogTuiApp(App[None]):
             with Vertical(id="sidebar"):
                 yield Label("SOURCES", id="sources-title")
                 with Vertical(id="sources"):
-                    for index, path in enumerate(self.paths):
+                    for index, source in enumerate(self.sources):
                         marker = "[green]●[/green]" if index == 0 else "[dim]○[/dim]"
                         yield Label(
-                            f"{marker}  {path.name}",
+                            f"{marker}  {self._display_name(source.name)}",
                             classes="source-row",
                             id=f"source-{index}",
                         )
@@ -180,6 +189,7 @@ class LogTuiApp(App[None]):
             with Vertical(id="content"):
                 yield Label("Live events", id="table-title")
                 yield DataTable(cursor_type="row", zebra_stripes=True, id="logs")
+                yield Input(placeholder="Search logs…", id="search-input")
                 with Horizontal(id="status-bar"):
                     yield Label(
                         "[bold green]● LIVE[/bold green]  Following files", id="stream-state"
@@ -191,10 +201,12 @@ class LogTuiApp(App[None]):
         table = self.query_one("#logs", DataTable)
         table.add_columns("TIME", "LEVEL", "SERVICE", "SOURCE", "MESSAGE")
         table.focus()
-        for path in self.paths:
-            self._tasks.append(asyncio.create_task(self._consume(FileSource(path))))
+        for source in self.sources:
+            task = asyncio.create_task(self._consume(source))
+            task.add_done_callback(partial(self._source_done, source_name=source.name))
+            self._tasks.append(task)
 
-    async def _consume(self, source: FileSource) -> None:
+    async def _consume(self, source: LogSource) -> None:
         async for line in source.lines():
             entry = self.parser.parse(line, source.name)
             entry.id = self._next_id
@@ -202,9 +214,17 @@ class LogTuiApp(App[None]):
             self.entries.append(entry)
             self._source_counts[source.name] += 1
             if self.paused:
-                self._pending.append(entry)
-            else:
+                self._pending_count += 1
+            elif self._matches_search(entry):
                 self._add_row(entry)
+            self._refresh_chrome()
+
+    def _source_done(self, task: asyncio.Task[Any], source_name: str) -> None:
+        if task.cancelled():
+            return
+        error = task.exception()
+        if error is not None:
+            self._source_errors[source_name] = str(error)
             self._refresh_chrome()
 
     def _add_row(self, entry: LogEntry) -> None:
@@ -227,28 +247,85 @@ class LogTuiApp(App[None]):
             table.move_cursor(row=table.row_count - 1)
 
     def _refresh_chrome(self) -> None:
-        pending = f" · {len(self._pending):,} pending" if self._pending else ""
-        if self.paused:
+        pending = f" · {self._pending_count:,} pending" if self._pending_count else ""
+        if self._source_errors:
+            state = (
+                f"[bold red]● SOURCE ERROR[/bold red]  {next(iter(self._source_errors.values()))}"
+            )
+        elif self.paused:
             state = f"[bold yellow]Ⅱ PAUSED[/bold yellow]{pending}"
         else:
             state = "[bold green]● LIVE[/bold green]  Following files"
         self.query_one("#stream-state", Label).update(state)
         count = len(self.entries)
-        self.query_one("#stream-count", Label).update(f"{count:,} event{'s' if count != 1 else ''}")
-        for index, path in enumerate(self.paths):
-            marker = "[green]●[/green]" if self._source_counts[path.name] else "[dim]○[/dim]"
-            total = self._source_counts[path.name]
+        if self.search_query:
+            visible = self.query_one("#logs", DataTable).row_count
+            counter = f"{visible:,} of {count:,} events"
+        else:
+            counter = f"{count:,} event{'s' if count != 1 else ''}"
+        self.query_one("#stream-count", Label).update(counter)
+        for index, source in enumerate(self.sources):
+            source_name = source.name
+            if source_name in self._source_errors:
+                marker = "[red]●[/red]"
+            else:
+                marker = "[green]●[/green]" if self._source_counts[source_name] else "[dim]○[/dim]"
+            total = self._source_counts[source_name]
             self.query_one(f"#source-{index}", Label).update(
-                f"{marker} {path.name} [dim]{total:,}[/dim]"
+                f"{marker} {self._display_name(source_name)} [dim]{total:,}[/dim]"
             )
+
+    def _display_name(self, source_name: str) -> str:
+        basename = Path(source_name).name
+        duplicate_count = sum(Path(source.name).name == basename for source in self.sources)
+        return source_name if duplicate_count > 1 else basename
 
     def action_toggle_pause(self) -> None:
         self.paused = not self.paused
         if not self.paused:
-            for entry in self._pending:
-                self._add_row(entry)
-            self._pending.clear()
+            self._rebuild_table()
+            self._pending_count = 0
         self._refresh_chrome()
+
+    def _rebuild_table(self) -> None:
+        table = self.query_one("#logs", DataTable)
+        table.clear()
+        for entry in self.entries:
+            if self._matches_search(entry):
+                self._add_row(entry)
+
+    def _matches_search(self, entry: LogEntry) -> bool:
+        if not self.search_query:
+            return True
+        haystack = json.dumps(entry.model_dump(mode="json"), default=str).casefold()
+        return self.search_query in haystack
+
+    def action_search(self) -> None:
+        search = self.query_one("#search-input", Input)
+        search.add_class("visible")
+        search.value = self.search_query
+        search.focus()
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        if event.input.id != "search-input":
+            return
+        self.search_query = event.value.strip().casefold()
+        event.input.remove_class("visible")
+        self._rebuild_table()
+        self._refresh_chrome()
+        self.query_one("#logs", DataTable).focus()
+
+    def action_clear_search(self) -> None:
+        search = self.query_one("#search-input", Input)
+        if search.has_class("visible"):
+            search.remove_class("visible")
+            self.query_one("#logs", DataTable).focus()
+            return
+        if self.search_query:
+            self.search_query = ""
+            search.value = ""
+            self._rebuild_table()
+            self._refresh_chrome()
 
     def action_cursor_down(self) -> None:
         self.query_one("#logs", DataTable).action_cursor_down()
