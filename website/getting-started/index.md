@@ -1,63 +1,106 @@
-# Getting started
+# Getting Started
+
+Get up and running with LogTUI in seconds.
 
 ## Requirements
 
 - Python 3.12 or newer
-- A terminal with modern color support
+- Modern terminal with ANSI color support (macOS Terminal, iTerm2, Kitty, Alacritty, WezTerm, Ghostty, Windows Terminal)
 
-## Install
+## Installation
 
-Install the current version directly from GitHub:
+### With pipx (recommended)
 
 ```bash
 pipx install git+https://github.com/JVRLC/logtui.git
 ```
 
-For local development:
+### With uv
+
+```bash
+uv tool install git+https://github.com/JVRLC/logtui.git
+```
+
+### For local development
 
 ```bash
 git clone https://github.com/JVRLC/logtui.git
 cd logtui
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e '.[dev]'
+pip install -e '.[dev]'
 ```
 
-## Open a log file
+---
+
+## Basic Usage
+
+### 1. Open a local log file
 
 ```bash
 logtui app.log
 ```
 
-LogTUI reads the current file and keeps following newly appended lines.
+LogTUI loads existing lines and automatically tails newly appended entries in real time.
 
-## Open several files
+### 2. Multi-source streaming
 
 ```bash
 logtui api.log worker.log nginx.log
 ```
 
-Each entry keeps its original source. Use `--buffer-size` to change the maximum
-number of entries retained in memory:
+Each source is color-coded and listed in the sidebar with live counters.
+
+### 3. Docker container logs
 
 ```bash
-logtui app.log --buffer-size 20000
+logtui docker:my-api-server
 ```
 
-## Read standard input
+---
 
-Use `-` to inspect any command that streams logs:
+## Filtering on Launch
+
+Start LogTUI with pre-applied filters so you see only what matters:
 
 ```bash
-docker logs -f my-api | logtui -
-kubectl logs -f deployment/api | logtui -
-journalctl -f | logtui -
+# Filter by log level
+logtui demo.log --level ERROR
+
+# Filter by structured query
+logtui demo.log --query "level:ERROR status:>=500"
+
+# Initial free-text search
+logtui demo.log --search "timeout"
 ```
 
-## Try the included demo
+---
 
-From a development checkout:
+## Headless CLI & Export Mode
+
+Use LogTUI non-interactively in shell scripts or CI/CD pipelines:
 
 ```bash
+# Export matching errors to JSON Lines
+logtui demo.log --headless --query "level:ERROR" --export errors.jsonl
+
+# Export to CSV
+logtui demo.log --headless --query "service:billing" --export billing.csv
+
+# Print JSON Lines directly to stdout
+logtui demo.log --headless --jsonl | jq .
+```
+
+---
+
+## Try the Included Demo
+
+Test all features right away with the included sample log or live simulator:
+
+```bash
+# Explore demo log
 logtui demo.log
+
+# Or run the live streaming simulator
+python generate_logs.py demo.log
 ```
