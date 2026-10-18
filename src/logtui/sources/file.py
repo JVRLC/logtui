@@ -9,12 +9,23 @@ from typing import TextIO
 class FileSource:
     """Read a file from the beginning, then follow appended lines."""
 
-    def __init__(self, path: Path, poll_interval: float = 0.1) -> None:
+    def __init__(
+        self,
+        path: Path,
+        poll_interval: float = 0.1,
+        wait_for_creation: bool = False,
+        follow: bool = True,
+    ) -> None:
         self.path = path
         self.name = str(path)
         self.poll_interval = poll_interval
+        self.wait_for_creation = wait_for_creation
+        self.follow = follow
 
     async def lines(self) -> AsyncIterator[str]:
+        if self.wait_for_creation:
+            while not self.path.is_file():
+                await asyncio.sleep(self.poll_interval)
         stream = self._open()
         try:
             while True:
@@ -22,6 +33,8 @@ class FileSource:
                 if line:
                     yield line
                     continue
+                if not self.follow:
+                    break
                 await asyncio.sleep(self.poll_interval)
                 try:
                     path_stat = self.path.stat()

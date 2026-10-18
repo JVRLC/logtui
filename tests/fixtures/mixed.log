@@ -1,0 +1,11 @@
+{"timestamp":"2026-10-18T10:00:01Z","level":"INFO","service":"api","message":"HTTP GET /api/v1/health","status":200,"duration_ms":12}
+{"timestamp":"2026-10-18T10:00:02Z","level":"DEBUG","service":"auth","message":"Token validated for user_42"}
+2026-10-18 10:00:03 - WARN - [worker] Job queue latency high: 1420ms
+{"timestamp":"2026-10-18T10:00:05Z","level":"ERROR","service":"database","message":"Connection refused to postgres:5432","retry_count":3}
+2026-10-18 10:00:06 - ERROR - [api] Unhandled exception occurred
+Traceback (most recent call last):
+  File "app/server.py", line 42, in handle_request
+    result = db.query("SELECT * FROM users")
+ConnectionError: Failed to connect to database host
+{"timestamp":"2026-10-18T10:00:08Z","level":"INFO","service":"cache","message":"Cache warmed 150 items in 45ms"}
+

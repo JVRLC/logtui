@@ -29,3 +29,25 @@ def test_parses_standard_python_log() -> None:
     assert entry.level == "ERROR"
     assert entry.message == "Database timeout"
     assert entry.timestamp == datetime(2026, 8, 20, 14, 31, 5, 123000)
+
+
+def test_parses_bracketed_log() -> None:
+    entry = AutoDetectParser().parse(
+        "[2026-08-20 14:31:05] [WARN] [worker] High memory usage", "worker.log"
+    )
+    assert entry.level == "WARN"
+    assert entry.service == "worker"
+    assert entry.message == "High memory usage"
+    assert entry.timestamp == datetime(2026, 8, 20, 14, 31, 5)
+
+
+def test_parses_logfmt() -> None:
+    entry = AutoDetectParser().parse(
+        'time="2026-08-20T14:31:05Z" level=info msg="Server started" component=web port=8080',
+        "app.log",
+    )
+    assert entry.level == "INFO"
+    assert entry.service == "web"
+    assert entry.message == "Server started"
+    assert entry.fields == {"port": "8080"}
+    assert entry.timestamp == datetime(2026, 8, 20, 14, 31, 5, tzinfo=UTC)
